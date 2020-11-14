@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import HTTPiOSCLient
 
 class ViewController: UIViewController {
 
