@@ -15,6 +15,13 @@ internal enum ServerURL: String {
     case base = "https://"
 }
 
+public struct FalconResponse {
+    public var json: JSON? = nil
+    public var error: Error? = nil
+    public var statusCode: Int?
+    public var response: HTTPURLResponse? = nil
+}
+
 internal class RestClient {
     var baseURL: String
     var apiKey: String?
@@ -35,7 +42,7 @@ internal class RestClient {
     }
     
     internal func request(_ method: HTTPMethod, URIString: String, parameters: [String:AnyObject]?, withQuery: Bool,
-                 headers: HTTPHeaders = [:], localized: Bool = true) -> Promise < JSON > {
+                 headers: HTTPHeaders = [:], localized: Bool = true) -> Promise < FalconResponse > {
         
         if initialized == false {
             fatalError("YOU MUST CALL SETUP")
@@ -55,9 +62,12 @@ internal class RestClient {
                                 switch response.result {
                                 case .success( _):
                                     let js = JSON(response.data as Any)
-                                    prom.fulfill(js)
+                                    let _response = FalconResponse(json: js, error: response.error, statusCode: response.response?.statusCode, response: response.response)
+                                    prom.fulfill(_response)
                                 case .failure(let error):
-                                    prom.reject(error)
+                                    let js = JSON(response.data as Any)
+                                    let response = FalconResponse(json: js, error: error, statusCode: response.response?.statusCode, response: response.response)
+                                    prom.resolve(response, error)
                 }
             }
         }

@@ -11,8 +11,8 @@ import SwiftyJSON
 import Alamofire
 
 public enum APIResult {
-    case success(JSON)
-    case error(Error)
+    case success(FalconResponse)
+    case error(FalconResponse?, Error?)
 }
 
 public class Falcon: NSObject {
@@ -26,10 +26,18 @@ public class Falcon: NSObject {
     
     public static func request(url: String?, method: HTTPMethod, parameters: [String:AnyObject]? = nil, withQuery: Bool = false, completion: @escaping (APIResult) -> ()) {
         if let _url = url {
-            self.requestManager?.request(method, URIString: _url, parameters: parameters, withQuery: withQuery).done({ (json) in
-                completion(APIResult.success(json))
+            self.requestManager?.request(method, URIString: _url, parameters: parameters, withQuery: withQuery).done({ (response) in
+                if let statCode = response.statusCode {
+                    if statCode >= 200, statCode < 300 {
+                        completion(.success(response))
+                    } else {
+                        completion(.error(response, response.error))
+                    }
+                } else {
+                    completion(APIResult.error(nil, response.error))
+                }
             }).catch({ (error) in
-                completion(APIResult.error(error))
+                completion(APIResult.error(nil, error))
             })
         }        
     }
