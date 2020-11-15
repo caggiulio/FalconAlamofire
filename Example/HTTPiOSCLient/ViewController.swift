@@ -14,7 +14,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        StaticAPI.callAPI(url: "todos/1", method: .get) { (result) in
+        StaticAPI.request(url: "todos/1", method: .get) { (result) in
             switch result {
                 case let .success(json):
                     print(json)

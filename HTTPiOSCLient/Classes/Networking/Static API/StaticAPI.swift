@@ -20,13 +20,13 @@ public class StaticAPI: NSObject {
     internal static var requestManager: RestClient?
     
     public static func setup(baseUrl: String) {
-        StaticAPI.requestManager = RestClient()
+        self.requestManager = RestClient()
         requestManager?.setupBaseUrl(baseUrl: baseUrl)
     }
     
-    public static func callAPI(url: String?, method: HTTPMethod, parameters: [String:AnyObject]? = nil, withQuery: Bool = false, completion: @escaping (APIResult) -> ()) {
+    public static func request(url: String?, method: HTTPMethod, parameters: [String:AnyObject]? = nil, withQuery: Bool = false, completion: @escaping (APIResult) -> ()) {
         if let _url = url {
-            StaticAPI.requestManager?.request(method, URIString: _url, parameters: parameters, withQuery: withQuery).done({ (json) in
+            self.requestManager?.request(method, URIString: _url, parameters: parameters, withQuery: withQuery).done({ (json) in
                 completion(APIResult.success(json))
             }).catch({ (error) in
                 completion(APIResult.error(error))
