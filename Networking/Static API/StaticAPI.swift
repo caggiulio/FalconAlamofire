@@ -10,6 +10,11 @@ import PromiseKit
 import SwiftyJSON
 import Alamofire
 
+public enum APIResult {
+    case success(JSON)
+    case error(Error)
+}
+
 public class StaticAPI: NSObject {
     
     internal static var requestManager: RestClient?
@@ -19,11 +24,13 @@ public class StaticAPI: NSObject {
         requestManager?.setupBaseUrl(baseUrl: baseUrl)
     }
     
-    public static func callAPI(url: String?, method: HTTPMethod, parameters: [String:AnyObject]? = nil, withQuery: Bool = false) -> Promise <JSON>? {
+    public static func callAPI(url: String?, method: HTTPMethod, parameters: [String:AnyObject]? = nil, withQuery: Bool = false, completion: @escaping (APIResult) -> ()) {
         if let _url = url {
-            return StaticAPI.requestManager?.request(method, URIString: _url, parameters: parameters, withQuery: withQuery)
-        }
-        
-        return nil
+            StaticAPI.requestManager?.request(method, URIString: _url, parameters: parameters, withQuery: withQuery).done({ (json) in
+                completion(APIResult.success(json))
+            }).catch({ (error) in
+                completion(APIResult.error(error))
+            })
+        }        
     }
 }
