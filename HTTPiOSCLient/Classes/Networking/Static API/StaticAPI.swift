@@ -15,7 +15,7 @@ public enum APIResult {
     case error(Error)
 }
 
-public class StaticAPI: NSObject {
+public class Falcon: NSObject {
     
     internal static var requestManager: RestClient?
     
