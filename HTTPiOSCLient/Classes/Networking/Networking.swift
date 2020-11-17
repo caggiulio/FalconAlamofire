@@ -7,8 +7,6 @@
 
 import Foundation
 import Alamofire
-import PromiseKit
-import SwiftyJSON
 
 // enum used for convenience purposes (optional)
 internal enum ServerURL: String {
@@ -16,10 +14,12 @@ internal enum ServerURL: String {
 }
 
 public struct FalconResponse {
-    public var json: JSON? = nil
+    public var json: [String:Any]? = nil
     public var error: Error? = nil
     public var statusCode: Int?
     public var response: HTTPURLResponse? = nil
+    public var data: Data?
+    public var success: Bool
 }
 
 internal class RestClient {
@@ -42,34 +42,40 @@ internal class RestClient {
     }
     
     internal func request(_ method: HTTPMethod, URIString: String, parameters: [String:AnyObject]?, withQuery: Bool,
-                 headers: HTTPHeaders = [:], localized: Bool = true) -> Promise < FalconResponse > {
+                          headers: HTTPHeaders = [:], localized: Bool = true, completion: @escaping (FalconResponse) -> ()) {
         
         if initialized == false {
             fatalError("YOU MUST CALL SETUP")
         }
         
-        return Promise { prom in
-            let header = defaultHeader
-            var query: String = baseURL+URIString
-            
-            print("requestURL: \(query)")
-            
-            AF.request(query, method: method,
-                              parameters: method == .get ? nil : parameters,
-                              encoding: JSONEncoding.default,
-                              headers: header).responseJSON { (response) in
-                                
-                                switch response.result {
-                                case .success( _):
-                                    let js = JSON(response.data as Any)
-                                    let _response = FalconResponse(json: js, error: response.error, statusCode: response.response?.statusCode, response: response.response)
-                                    prom.fulfill(_response)
-                                case .failure(let error):
-                                    let js = JSON(response.data as Any)
-                                    let response = FalconResponse(json: js, error: error, statusCode: response.response?.statusCode, response: response.response)
-                                    prom.resolve(response, error)
-                }
+        let header = defaultHeader
+        var query: String = baseURL+URIString
+        
+        print("requestURL: \(query)")
+        
+        AF.request(query, method: method,
+                          parameters: method == .get ? nil : parameters,
+                          encoding: JSONEncoding.default,
+                          headers: header).responseJSON { (response) in
+                            
+                            var finalJson: [String:Any]?
+                            do {
+                                if let data = response.data, let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                                    finalJson = json
+                                }
+                            } catch _ as NSError {
+
+                            }
+                            
+                            switch response.result {
+                            case .success( _):
+                                let _response = FalconResponse(json: finalJson, error: response.error, statusCode: response.response?.statusCode, response: response.response, data: response.data, success: true)
+                                completion(_response)
+                            case .failure( _):
+                                let _response = FalconResponse(json: finalJson, error: response.error, statusCode: response.response?.statusCode, response: response.response, data: response.data, success: false)
+                                completion(_response)
             }
         }
+        
     }
 }

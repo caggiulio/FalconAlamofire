@@ -16,7 +16,7 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view, typically from a nib.
         Falcon.request(url: "todos/1", method: .get) { (result) in
             switch result {
-                case let .success(response): break
+            case let .success(response): print(response.json)
                 case let .error(response, error): break
             }
         }

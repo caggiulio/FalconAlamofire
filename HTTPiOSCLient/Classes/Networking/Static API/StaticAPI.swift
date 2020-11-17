@@ -6,8 +6,6 @@
 //
 
 import Foundation
-import PromiseKit
-import SwiftyJSON
 import Alamofire
 
 public enum APIResult {
@@ -26,18 +24,13 @@ public class Falcon: NSObject {
     
     public static func request(url: String?, method: HTTPMethod, parameters: [String:AnyObject]? = nil, withQuery: Bool = false, completion: @escaping (APIResult) -> ()) {
         if let _url = url {
-            self.requestManager?.request(method, URIString: _url, parameters: parameters, withQuery: withQuery).done({ (response) in
-                if let statCode = response.statusCode {
-                    if statCode >= 200, statCode < 300 {
-                        completion(.success(response))
-                    } else {
-                        completion(.error(response, response.error))
-                    }
+            
+            self.requestManager?.request(method, URIString: _url, parameters: parameters, withQuery: withQuery, completion: { (response) in
+                if response.success {
+                    completion(.success(response))
                 } else {
-                    completion(APIResult.error(nil, response.error))
+                    completion(.error(response, response.error))
                 }
-            }).catch({ (error) in
-                completion(APIResult.error(nil, error))
             })
         }        
     }
