@@ -30,7 +30,7 @@ TODO: Add long description of the pod here.
 
   s.ios.deployment_target = '12.0'
 
-  s.source_files = 'HTTPiOSCLient/Classes/**/*'
+  s.source_files = 'Falcon/Classes/**/*'
   
   # s.resource_bundles = {
   #   'HTTPiOSCLient' => ['HTTPiOSCLient/Assets/*.png']
