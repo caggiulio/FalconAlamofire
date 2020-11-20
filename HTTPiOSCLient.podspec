@@ -7,8 +7,8 @@
 #
 
 Pod::Spec.new do |s|
-  s.name             = 'HTTPiOSCLient'
-  s.version          = '0.1.0'
+  s.name             = 'Falcon'
+  s.version          = '0.1.1'
   s.summary          = 'A short description of HTTPiOSCLient.'
 
 # This description is used to generate tags and improve search results.
