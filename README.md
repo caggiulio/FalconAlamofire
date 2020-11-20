@@ -1,4 +1,4 @@
-# HTTPiOSCLient
+# Falcon
 
 [![CI Status](https://img.shields.io/travis/caggiulio/HTTPiOSCLient.svg?style=flat)](https://travis-ci.org/caggiulio/HTTPiOSCLient)
 [![Version](https://img.shields.io/cocoapods/v/HTTPiOSCLient.svg?style=flat)](https://cocoapods.org/pods/HTTPiOSCLient)
@@ -17,7 +17,7 @@ HTTPiOSCLient is available through [CocoaPods](https://cocoapods.org). To instal
 it, simply add the following line to your Podfile:
 
 ```ruby
-pod 'HTTPiOSCLient'
+pod 'Falcon'
 ```
 
 ## Author
